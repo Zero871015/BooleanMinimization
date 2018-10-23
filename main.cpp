@@ -1,3 +1,8 @@
+// Name: zero871015(B10615032)
+// Date: 2018/10/21
+// Last Update: 2018/10/23
+// Problem statement: Exact Boolean Minimization
+
 #include <iostream>
 #include <algorithm>
 #include <vector>
@@ -8,6 +13,7 @@
 #include <sstream>
 using namespace std;
 
+//Data structure of SOP.
 struct sop
 {
 	set<int> num;
@@ -23,6 +29,7 @@ sop Merge(sop& s1, sop& s2);
 
 int main(int argc, char *argv[])
 {
+	//Need input and output files.
 	if (argc != 3)
 	{
 		cout << "parameter error!" << endl;
@@ -31,6 +38,7 @@ int main(int argc, char *argv[])
 	else
 	{
 		ifstream fin(argv[1]);
+		//Can not open.
 		if (!fin)
 		{
 			cout << "file error!" << endl;
@@ -55,28 +63,34 @@ void Quine_McCluskey(ifstream &fin, ofstream &fout)
 	while (!fin.eof())
 	{
 		fin >> str;
+		//How many input.
 		if (str == ".i")
 		{
 			fin >> num_in;
+			//Initialize the truth table.
 			table = new char[(int)pow(2, num_in)];
 			for (int i = 0; i < (int)pow(2,num_in); i++)
 			{
 				table[i] = '0';
 			}
 		}
+		//How many output.
 		else if (str == ".o")
 		{
 			//In this case, output always only one.
 			getline(fin, str);
 		}
+		//Name of input.
 		else if (str == ".ilb")
 		{
 			getline(fin, ilbs);
 		}
+		//Name of output.
 		else if (str == ".ob")
 		{
 			fin >> ob;
 		}
+		//Input SOP.
 		else if (str == ".p")
 		{
 			//Get the karnaugh map.
@@ -86,6 +100,7 @@ void Quine_McCluskey(ifstream &fin, ofstream &fout)
 			{
 				fin >> in >> out;
 				reverse(in.begin(), in.end());
+				//Fill in truth table.
 				for (int j = 0; j < (int)pow(2, num_in); j++)
 				{
 					int temp = j;
@@ -116,7 +131,7 @@ void Quine_McCluskey(ifstream &fin, ofstream &fout)
 					}
 				}
 			}
-			//Record the target.
+			//Record the target cells.
 			map<int,bool> targets;
 			//For sop of only one 1, two 1, three 1....
 			vector<sop>* S = new vector<sop>[num_in + 1];
@@ -150,6 +165,7 @@ void Quine_McCluskey(ifstream &fin, ofstream &fout)
 					targets[i] = false;
 			}
 			vector<sop> Result;
+			//Recursion to find prime implicants.
 			Simplification(S, num_in + 1, &Result);
 
 			bool *pick = new bool[Result.size() + 1];
@@ -160,6 +176,7 @@ void Quine_McCluskey(ifstream &fin, ofstream &fout)
 
 			int Maxterm = 99999;
 			string pickwho;
+			//Find the term or terms composed of the minimum total number of literals.
 			while (!pick[Result.size()])
 			{
 				for (auto i = targets.begin(); i != targets.end(); i++)
@@ -242,6 +259,7 @@ void Quine_McCluskey(ifstream &fin, ofstream &fout)
 	}
 }
 
+//Return how many different of two string.
 int diffStr(string s1, string s2)
 {
 	int count = 0;
@@ -253,6 +271,7 @@ int diffStr(string s1, string s2)
 	return count;
 }
 
+//Merge two sop, and return sop which contain '-'.
 sop Merge(sop& s1, sop& s2)
 {
 	sop temp;
